@@ -1,0 +1,10 @@
+query Abc($myid: ID!) {
+
+  launch(id: $myid) {
+    id
+    rocket {
+      rocket_name
+    }
+    mission_id
+  }
+}

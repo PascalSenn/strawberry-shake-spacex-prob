@@ -1,0 +1,116 @@
+﻿schema {
+  query: Query
+}
+
+enum ApplyPolicy {
+  BEFORE_RESOLVER
+  AFTER_RESOLVER
+}
+
+type Query {
+  lastKeyFigureQueries: LastKeyFigureQueries
+}
+
+type GetLatestKeyFiguresForMachinesResult {
+  "The L6 of the machine"
+  machine: String
+  keyFigures: [LastKeyFigureValue]
+}
+
+type LastKeyFigureValue {
+  "Timestamp of the KeyFigure when created on the machine.\nTimestamp is always utc."
+  timestamp: DateTime!
+  "Name of the KeyFigure."
+  name: String
+  "Value of the KeyFigure."
+  value: String
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+"GetLatestKeyFiguresForMachinesResult queries"
+type LastKeyFigureQueries {
+  "Filter for specific machine and keyfigures.\n\n\n**Returns:**\nList of KeyFigures for a specific machine."
+  latestKeyFiguresForMachine("The L6" l6: String "List of KeyFigures" keyFigureNames: [String] where: GetLatestKeyFiguresForMachineResultFilterInput): [GetLatestKeyFiguresForMachineResult]
+  "Filter for machines and keyfigures.&gt;"
+  latestKeyFiguresForMachines(listOfl6: [String] keyFigureNames: [String] where: GetLatestKeyFiguresForMachinesResultFilterInput): [GetLatestKeyFiguresForMachinesResult]
+}
+
+"This class is needed to put the authorize attribute on it. If we don't do\nthat then for every result in the KeyFigures property of the GetLatestKeyFiguresForMachinesResult DTO\nthe the auth is called and somehow HotChocolate can't handle it."
+input GetLatestKeyFiguresForMachineResultFilterInput {
+  and: [GetLatestKeyFiguresForMachineResultFilterInput!]
+  or: [GetLatestKeyFiguresForMachineResultFilterInput!]
+  timestamp: ComparableDateTimeOperationFilterInput
+  "Name of the KeyFigure."
+  name: StringOperationFilterInput
+  "Value of the KeyFigure."
+  value: StringOperationFilterInput
+}
+
+input GetLatestKeyFiguresForMachinesResultFilterInput {
+  and: [GetLatestKeyFiguresForMachinesResultFilterInput!]
+  or: [GetLatestKeyFiguresForMachinesResultFilterInput!]
+  "The L6 of the machine"
+  machine: StringOperationFilterInput
+  keyFigures: ListFilterInputTypeOfLastKeyFigureValueFilterInput
+}
+
+input ComparableDateTimeOperationFilterInput {
+  eq: DateTime
+  neq: DateTime
+  in: [DateTime!]
+  nin: [DateTime!]
+  gt: DateTime
+  ngt: DateTime
+  gte: DateTime
+  ngte: DateTime
+  lt: DateTime
+  nlt: DateTime
+  lte: DateTime
+  nlte: DateTime
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String
+  neq: String
+  contains: String
+  ncontains: String
+  in: [String]
+  nin: [String]
+  startsWith: String
+  nstartsWith: String
+  endsWith: String
+  nendsWith: String
+}
+
+input ListFilterInputTypeOfLastKeyFigureValueFilterInput {
+  all: LastKeyFigureValueFilterInput
+  none: LastKeyFigureValueFilterInput
+  some: LastKeyFigureValueFilterInput
+  any: Boolean
+}
+
+input LastKeyFigureValueFilterInput {
+  and: [LastKeyFigureValueFilterInput!]
+  or: [LastKeyFigureValueFilterInput!]
+  "Timestamp of the KeyFigure when created on the machine.\nTimestamp is always utc."
+  timestamp: ComparableDateTimeOperationFilterInput
+  "Name of the KeyFigure."
+  name: StringOperationFilterInput
+  "Value of the KeyFigure."
+  value: StringOperationFilterInput
+}
+
+"This class is needed to put the authorize attribute on it. If we don't do\nthat then for every result in the KeyFigures property of the GetLatestKeyFiguresForMachinesResult DTO\nthe the auth is called and somehow HotChocolate can't handle it."
+type GetLatestKeyFiguresForMachineResult {
+  timestamp: DateTime!
+  "Name of the KeyFigure."
+  name: String
+  "Value of the KeyFigure."
+  value: String
+}
+
+directive @authorize("The name of the authorization policy that determines access to the annotated resource." policy: String "Roles that are allowed to access the annotated resource." roles: [String!] "Defines when when the resolver shall be executed.By default the resolver is executed after the policy has determined that the current user is allowed to access the field." apply: ApplyPolicy! = BEFORE_RESOLVER) repeatable on SCHEMA | OBJECT | FIELD_DEFINITION
